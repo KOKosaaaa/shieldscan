@@ -1,0 +1,28 @@
+REM ═══════════════════════════════════════════════════
+REM   ShieldScan BadUSB Launcher v3 (Лёгкий)
+REM   Без прав админа, ищет .exe на всех USB
+REM ═══════════════════════════════════════════════════
+REM
+REM   Самый простой вариант:
+REM   - НЕ запрашивает права администратора
+REM   - Сам находит ShieldScan.exe на любой флешке
+REM   - Часть проверок будет ограничена без админа
+REM
+REM   Подготовка:
+REM   1. Скомпилируй ShieldScan.exe
+REM   2. Положи его в корень USB-флешки
+REM   3. Вставь флешку → подключи Flipper → запусти
+REM ═══════════════════════════════════════════════════
+
+DELAY 1000
+
+REM Открываем PowerShell (без админа - не будет UAC)
+GUI r
+DELAY 500
+STRING powershell -NoProfile -ExecutionPolicy Bypass
+ENTER
+DELAY 1000
+
+REM Ищем ShieldScan.exe на всех съёмных дисках и запускаем
+STRING $drives = Get-WmiObject Win32_LogicalDisk | Where-Object {$_.DriveType -eq 2} | ForEach-Object {$_.DeviceID}; $found = $false; foreach ($d in $drives) {$p = "$d\ShieldScan.exe"; if (Test-Path $p) {Write-Host "Найден: $p" -F Green; & $p; $found = $true; break}}; if (-not $found) {Write-Host "ShieldScan.exe не найден на USB-накопителях" -F Red}; Read-Host "`nНажмите Enter"
+ENTER

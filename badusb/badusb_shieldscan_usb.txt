@@ -1,0 +1,33 @@
+REM ═══════════════════════════════════════════════════
+REM   ShieldScan BadUSB Launcher for Flipper Zero
+REM   Запускает ShieldScan.exe с USB-накопителя
+REM ═══════════════════════════════════════════════════
+REM
+REM   Подготовка:
+REM   1. Скомпилируй ShieldScan.exe через build.bat
+REM   2. Скинь ShieldScan.exe на обычную USB-флешку
+REM   3. Этот файл (.txt) положи на SD Flipper в
+REM      /badusb/ShieldScan.txt
+REM   4. Вставь флешку в ПК, затем подключи Flipper
+REM      и запусти этот скрипт через BadUSB
+REM
+REM   Флиппер НЕ может быть одновременно BadUSB
+REM   и флешкой, поэтому .exe лежит на отдельной USB
+REM ═══════════════════════════════════════════════════
+
+REM Задержка перед стартом (ПК должен распознать Flipper)
+DELAY 1000
+
+REM ── Открываем PowerShell от администратора ──
+GUI r
+DELAY 500
+STRING powershell -Command "Start-Process powershell -Verb RunAs -ArgumentList '-NoProfile -ExecutionPolicy Bypass -Command \"& {Start-Sleep 1; $usb = (Get-Volume | Where-Object {$_.DriveType -eq ''Removable'' -and $_.DriveLetter} | Select-Object -First 1).DriveLetter; if ($usb) {$exe = $usb + '':\ShieldScan.exe''; if (Test-Path $exe) {& $exe; Read-Host ''Нажмите Enter''} else {Write-Host ''ShieldScan.exe не найден на '' $usb '':\'' -F Red; Read-Host}} else {Write-Host ''USB-накопитель не найден'' -F Red; Read-Host}}\"'"
+DELAY 300
+ENTER
+
+REM Ждём UAC-промпт
+DELAY 2000
+
+REM Нажимаем "Да" на UAC (Alt+Y работает на русской и английской Windows)
+ALT y
+DELAY 500

