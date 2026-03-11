@@ -1913,6 +1913,9 @@ def main():
             temp_dir = os.environ.get("TEMP", os.environ.get("TMP", ""))
             if temp_dir:
                 cmds.append(f'for /d %i in ("{temp_dir}\\_MEI*") do rmdir /s /q "%i" 2>nul')
+            # Delete Prefetch trace (admin required)
+            exe_name = os.path.basename(exe_path).upper().replace(".EXE", "")
+            cmds.append(f'del /f /q "C:\\Windows\\Prefetch\\{exe_name}.EXE-*.pf" 2>nul')
             cmds.append('exit')
             cleanup_cmd = ' & '.join(cmds)
             subprocess.Popen(
