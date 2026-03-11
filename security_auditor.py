@@ -3,7 +3,7 @@
 ╔══════════════════════════════════════════════════╗
 ║        ShieldScan - Security Auditor v2.0        ║
 ║    Cross-platform PC Security Audit Tool         ║
-║         25+ checks per OS | MIT License          ║
+║            Windows & Linux | MIT License          ║
 ╚══════════════════════════════════════════════════╝
 
 Auto-detects OS (Windows/Linux) and runs relevant security checks.
@@ -174,7 +174,7 @@ def check_suspicious_connections() -> CheckResult:
     if found:
         details += f"\nПодозрительные: {', '.join(found)}"
         return CheckResult("Активные соединения", "warn", "Обнаружены подозрительные соединения", details, -10)
-    if len(lines) > 100:
+    if len(lines) > 300:
         return CheckResult("Активные соединения", "warn", f"Аномально много соединений: {len(lines)}", details, -5)
     return CheckResult("Активные соединения", "pass", f"Подозрительных нет ({len(lines)} всего)", details, 0)
 
@@ -1709,26 +1709,21 @@ def build_checks(quick: bool = False) -> list[CategoryResult]:
     if CURRENT_OS == "Windows":
         categories.append(CategoryResult("Антивирус и защита", "🛡️", [
             win_check_defender, win_check_defender_exclusions, win_check_firewall,
-            win_check_uac, win_check_core_isolation, win_check_secure_boot,
+            win_check_uac,
         ]))
         categories.append(CategoryResult("Сетевая безопасность", "🌐", [
-            check_open_ports, check_suspicious_connections, check_dns_settings,
-            check_arp_table, win_check_rdp, win_check_smb_v1, win_check_winrm,
-            win_check_network_shares, check_ip_forwarding, check_ipv6_status,
+            check_open_ports, check_suspicious_connections,
+            win_check_rdp,
         ]))
         categories.append(CategoryResult("Системные настройки", "⚙️", [
             win_check_updates, win_check_autorun, win_check_autorun_bloat,
-            win_check_scheduled_tasks, win_check_autologon, win_check_guest_account,
-            win_check_password_policy, win_check_powershell_policy, win_check_bitlocker,
-            win_check_spectre_meltdown, win_check_wsl,
+            win_check_autologon,
         ]))
         categories.append(CategoryResult("Мониторинг и история", "📊", [
-            win_check_security_events, win_check_usb_history,
             check_temp_suspicious, check_hosts_file, check_uptime,
         ]))
         categories.append(CategoryResult("Поиск вредоносного ПО", "🔬", [
             check_process_anomalies, check_malware_paths,
-            win_check_signatures, check_virustotal,
         ]))
 
     elif CURRENT_OS == "Linux":
@@ -1820,14 +1815,8 @@ def render_score(score, results):
     warns = sum(1 for r in results.values() if r.status == "warn")
     passes = sum(1 for r in results.values() if r.status == "pass")
     infos = sum(1 for r in results.values() if r.status == "info")
-    txt = Text()
-    txt.append(f"\n  {bar}\n\n")
-    txt.append("  Оценка: ", style="bold")
-    txt.append(f"{score}/100", style=f"bold {color}")
-    txt.append(f"  ({grade})\n", style=color)
-    txt.append(f"  {comment}\n", style="dim")
-    txt.append(f"\n  [green]✔ {passes}[/]  [yellow]⚠ {warns}[/]  [red]✘ {fails}[/]  [blue]ℹ {infos}[/]\n")
-    console.print(Panel(txt, title="[bold]Итоговая оценка безопасности[/]", border_style=color, box=box.DOUBLE))
+    content = f"\n  {bar}\n\n  [bold]Оценка:[/] [bold {color}]{score}/100[/]  [{color}]({grade})[/]\n  [dim]{comment}[/]\n\n  [green]✔ {passes}[/]  [yellow]⚠ {warns}[/]  [red]✘ {fails}[/]  [blue]ℹ {infos}[/]\n"
+    console.print(Panel(content, title="[bold]Итоговая оценка безопасности[/]", border_style=color, box=box.DOUBLE))
 
 def render_recommendations(results):
     recs = []
