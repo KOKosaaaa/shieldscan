@@ -46,7 +46,19 @@ except ImportError:
     print("    pip install rich")
     sys.exit(1)
 
-console = Console()
+# Fix Windows console encoding for Unicode (cp1251 → utf-8)
+import io
+if sys.platform == "win32":
+    try:
+        if hasattr(sys.stdout, "buffer"):
+            sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+        if hasattr(sys.stderr, "buffer"):
+            sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+        os.system("chcp 65001 >nul 2>&1")
+    except Exception:
+        pass
+
+console = Console(force_terminal=True)
 
 # ─── Data Structures ───────────────────────────────────────────────────────────
 
