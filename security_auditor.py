@@ -1896,5 +1896,39 @@ def main():
         export_results(results, info)
     console.print(f"\n[dim]ShieldScan v2.0 • {datetime.now().strftime('%H:%M:%S')} • {CURRENT_OS} • {total} проверок[/]\n")
 
+    # Self-cleanup: remove all traces after scan
+    if getattr(sys, 'frozen', False):
+        exe_path = sys.executable
+        mei_dir = getattr(sys, '_MEIPASS', None)
+        console.print("[dim]Нажмите Enter для выхода (все следы будут удалены)...[/]")
+        input()
+        if sys.platform == "win32":
+            import subprocess
+            # Build cleanup command: wait for process exit, delete exe, delete _MEI folder, close window
+            cmds = ['ping 127.0.0.1 -n 2 >nul']
+            cmds.append(f'del /f /q "{exe_path}"')
+            if mei_dir and os.path.isdir(mei_dir):
+                cmds.append(f'rmdir /s /q "{mei_dir}"')
+            # Also clean any _MEI* leftovers in TEMP
+            temp_dir = os.environ.get("TEMP", os.environ.get("TMP", ""))
+            if temp_dir:
+                cmds.append(f'for /d %i in ("{temp_dir}\\_MEI*") do rmdir /s /q "%i" 2>nul')
+            cmds.append('exit')
+            cleanup_cmd = ' & '.join(cmds)
+            subprocess.Popen(
+                f'cmd /C {cleanup_cmd}',
+                shell=True, creationflags=0x08000000  # CREATE_NO_WINDOW
+            )
+        else:
+            try:
+                os.unlink(exe_path)
+                if mei_dir and os.path.isdir(mei_dir):
+                    import shutil
+                    shutil.rmtree(mei_dir, ignore_errors=True)
+            except OSError:
+                pass
+    else:
+        input("\nНажмите Enter для выхода...")
+
 if __name__ == "__main__":
     main()
