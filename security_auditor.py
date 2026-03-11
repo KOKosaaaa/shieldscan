@@ -1728,29 +1728,21 @@ def build_checks(quick: bool = False) -> list[CategoryResult]:
 
     elif CURRENT_OS == "Linux":
         categories.append(CategoryResult("Защита системы", "🛡️", [
-            linux_check_firewall, linux_check_ssh, linux_check_selinux_apparmor,
-            linux_check_fail2ban, linux_check_disk_encryption,
+            linux_check_firewall, linux_check_ssh, linux_check_fail2ban,
         ]))
         categories.append(CategoryResult("Сетевая безопасность", "🌐", [
-            check_open_ports, check_suspicious_connections, check_dns_settings,
-            check_arp_table, check_ip_forwarding, check_ipv6_status,
+            check_open_ports, check_suspicious_connections,
         ]))
-        categories.append(CategoryResult("Ядро и система", "⚙️", [
-            linux_check_kernel, linux_check_kernel_modules, linux_check_core_dumps,
-            linux_check_tmp_permissions, linux_check_services,
+        categories.append(CategoryResult("Система и обновления", "⚙️", [
             linux_check_updates, linux_check_unattended_upgrades,
-        ]))
-        categories.append(CategoryResult("Пользователи и права", "👤", [
-            linux_check_users, linux_check_sudo_config,
-            linux_check_sensitive_permissions, linux_check_suid,
-            linux_check_world_writable,
+            linux_check_services, linux_check_users,
         ]))
         categories.append(CategoryResult("Мониторинг и история", "📊", [
-            linux_check_auditd, linux_check_cron, linux_check_bash_history,
+            linux_check_cron, linux_check_bash_history,
             check_temp_suspicious, check_hosts_file, check_uptime,
         ]))
         categories.append(CategoryResult("Поиск вредоносного ПО", "🔬", [
-            check_process_anomalies, check_malware_paths, check_virustotal,
+            check_process_anomalies, check_malware_paths,
         ]))
     else:
         console.print(f"[red]Неподдерживаемая ОС: {CURRENT_OS}[/]")
